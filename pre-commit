@@ -1,0 +1,66 @@
+#!/usr/bin/env ruby
+
+class Parser
+  def initialize
+    @output = `git diff --cached --check`
+  end
+
+  def exists_problem_files?
+    !@output.empty?
+  end
+
+  def problem_files
+    files = {}
+    lines = @output.lines.to_a.delete_if { |line| /^\+/ =~ line }
+    lines.each do |line|
+      filename = parse_filename(line)
+      files[filename] = { :lines => [], :flag => false } unless files.has_key? filename
+      if line.include? 'whitespace'
+        files[filename][:lines] << parse_lineno(line)
+      else
+        files[filename][:flag] = true
+      end
+    end
+    files
+  end
+
+  private
+
+  def parse_filename(string)
+    string.scan(/[\w\/\.]+/)[0]
+  end
+
+  def parse_lineno(string)
+    string.scan(/\d+:/)[0].chop
+  end
+end
+
+class TrailingSpacesRemover
+  def from(files)
+
+  end
+
+  def add_to_index(files)
+    files = files.join(' ')
+    system("git add #{files}")
+  end
+
+  private
+
+  def remove_trailing_spaces
+
+  end
+
+  def remove_blank_lines
+
+  end
+end
+
+parser = Parser.new
+trailing_spaces_remover = TrailingSpacesRemover.new
+
+if parser.exists_problem_files?
+  problem_files = parser.problem_files
+  good_files = trailing_spaces_remover.from problem_files
+  trailing_spaces_remover.add_to_index good_files
+end
