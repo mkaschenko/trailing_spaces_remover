@@ -2,7 +2,7 @@
 
 ## Description ##
 
-Git pre-commit hook for remove trailing spaces in lines and blank lines in end of staged files
+Git pre-commit hook for remove trailing spaces in lines and blank lines in the end of staged files
 
 ## Installation ##
 
