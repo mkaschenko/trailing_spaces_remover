@@ -37,22 +37,18 @@ end
 
 class TrailingSpacesRemover
   def from(files)
-
+    files.each_key do |filename|
+      l = File.readlines(filename).to_a.insert(0, nil)
+      File.open(filename, 'w') do |f|
+        files[filename][:lines].each { |num| l[num].rstrip!.concat("\n") }
+        f.print l
+      end
+    end
   end
 
   def add_to_index(files)
     files = files.join(' ')
     system("git add #{files}")
-  end
-
-  private
-
-  def remove_trailing_spaces
-
-  end
-
-  def remove_blank_lines
-
   end
 end
 
