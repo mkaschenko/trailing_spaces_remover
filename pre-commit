@@ -6,7 +6,7 @@ class Parser
   end
 
   def exists_problem_files?
-    !@output.empty?
+    @output.any?
   end
 
   def problem_files
@@ -39,11 +39,20 @@ class TrailingSpacesRemover
   def from(files)
     files.each_key do |filename|
       l = File.readlines(filename).to_a.insert(0, nil)
+      bad_file = files[filename]
       File.open(filename, 'w') do |f|
-        files[filename][:lines].each { |num| l[num].rstrip!.concat("\n") }
+        bad_file[:lines].each { |num| l[num].rstrip!.concat("\n") }
+        if bad_file[:flag]
+          index = l.length - 1
+          while l[index] == "\n"
+            l.delete_at(index)
+            index -= 1
+          end
+        end
         f.print l
       end
     end
+    files.keys
   end
 
   def add_to_index(files)
