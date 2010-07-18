@@ -20,7 +20,7 @@ Make executable pre-commit file:
 
 Copy pre-commit file to git hook directory:
 
-    cp pre-commit /path/to/git/repository/.git/hooks/pre-commit
+    cp pre-commit /path/to/git/repository/.git/hooks
 
 ## Contacts ##
 
