@@ -2,7 +2,8 @@
 
 class Parser
   def initialize
-    @output = `git diff --cached --check`
+    result = system 'git rev-parse --verify HEAD'
+    @output = result ? `git diff --cached --check` : `git diff --cached --check 4b825dc642cb6eb9a060e54bf8d69288fbee4904`
   end
 
   def exists_problem_files?
@@ -15,11 +16,7 @@ class Parser
     lines.each do |line|
       filename = parse_filename(line)
       files[filename] = { :lines => [], :flag => false } unless files.has_key? filename
-      if line.include? 'whitespace'
-        files[filename][:lines] << parse_lineno(line)
-      else
-        files[filename][:flag] = true
-      end
+      line.include? 'whitespace' ? files[filename][:lines] << parse_lineno(line) : files[filename][:flag] = true
     end
     files
   end
@@ -57,7 +54,7 @@ class TrailingSpacesRemover
 
   def add_to_index(files)
     files = files.join(' ')
-    system("git add #{files}")
+    system "git add #{files}"
   end
 end
 
