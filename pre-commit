@@ -16,7 +16,7 @@ class Parser
     lines.each do |line|
       filename = parse_filename(line)
       files[filename] = { :lines => [], :flag => false } unless files.has_key? filename
-      line.include? "whitespace" ? files[filename][:lines] << parse_lineno(line) : files[filename][:flag] = true
+      line.include?('whitespace') ? files[filename][:lines] << parse_lineno(line) : files[filename][:flag] = true
     end
     files
   end
