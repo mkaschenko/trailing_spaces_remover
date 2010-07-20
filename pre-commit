@@ -3,7 +3,8 @@
 class Parser
   def initialize
     result = system 'git rev-parse --verify HEAD >/dev/null 2>&1'
-    @output = result ? `git diff --cached --check` : `git diff --cached --check 4b825dc642cb6eb9a060e54bf8d69288fbee4904`
+    rev = '4b825dc642cb6eb9a060e54bf8d69288fbee4904' unless result
+    @output = `git diff --cached --check #{rev} | grep -e ^[^+]`
   end
 
   def exists_problem_files?
@@ -12,7 +13,7 @@ class Parser
 
   def problem_files
     files = {}
-    lines = @output.lines.to_a.delete_if { |line| /^\+/ =~ line }
+    lines = @output.lines.to_a
     lines.each do |line|
       filename = parse_filename(line)
       files[filename] = { :lines => [], :flag => false } unless files.has_key? filename
