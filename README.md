@@ -8,7 +8,7 @@ Git pre-commit hook for remove trailing spaces in lines and blank lines in the e
 
 Clone git repository:
 
-    git clone git://github.com/MaximKa/trailing_spaces_remover.git
+    git clone git://github.com/mkaschenko/trailing_spaces_remover.git
 
 Change directory to downloaded project:
 
