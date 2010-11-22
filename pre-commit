@@ -25,7 +25,7 @@ class Parser
   private
 
   def parse_filename(string)
-    string.scan(/[\w\/\.]+/)[0]
+    string.scan(/[\w\-\/\.]+/)[0]
   end
 
   def parse_lineno(string)
