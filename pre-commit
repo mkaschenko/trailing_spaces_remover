@@ -1,39 +1,44 @@
 #!/usr/bin/env ruby
 
 class Parser
+
   def initialize
-    result = system 'git rev-parse --verify HEAD >/dev/null 2>&1'
-    rev = '4b825dc642cb6eb9a060e54bf8d69288fbee4904' unless result
+    result  = system 'git rev-parse --verify HEAD >/dev/null 2>&1'
+    rev     = '4b825dc642cb6eb9a060e54bf8d69288fbee4904' unless result
     @output = `git diff --cached --check #{rev} | grep -e ^[^+]`
   end
 
   def exists_problem_files?
-    @output.any?
+    @output.length.nonzero?
   end
 
   def problem_files
     files = {}
-    lines = @output.lines.to_a
+    lines = @output.lines
+
     lines.each do |line|
       filename = parse_filename(line)
       files[filename] = { :lines => [], :flag => false } unless files.has_key? filename
       line.include?('whitespace') ? files[filename][:lines] << parse_lineno(line) : files[filename][:flag] = true
     end
+
     files
   end
 
   private
 
-  def parse_filename(string)
-    string.scan(/[\w\-\/\.]+/)[0]
-  end
+    def parse_filename(string)
+      string.scan(/[\w\-\/\.]+/)[0]
+    end
 
-  def parse_lineno(string)
-    string.scan(/\d+:/)[0].chop.to_i
-  end
+    def parse_lineno(string)
+      string.scan(/\d+:/)[0].chop.to_i
+    end
+
 end
 
 class TrailingSpacesRemover
+
   def from(files)
     files.each_key do |filename|
       l = File.readlines(filename).to_a.insert(0, nil)
@@ -47,9 +52,10 @@ class TrailingSpacesRemover
             index -= 1
           end
         end
-        f.print l
+        f.print l.join
       end
     end
+
     files.keys
   end
 
@@ -57,6 +63,7 @@ class TrailingSpacesRemover
     files = files.join(' ')
     system "git add #{files}"
   end
+
 end
 
 parser = Parser.new
